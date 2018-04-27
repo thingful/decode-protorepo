@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package decode.thingful.devicereg;
+option go_package = "devicereg";
+
+service DeviceRegistration {
+  // ClaimDevice here is what starts the flow off. It takes as input a device
+  // token (identifying the device), and a user uid (which is the decode user
+  // id). In this model there is no entitlement policy as such, so this step
+  // would also call down to the encoder to create a stream for the user.
+  rpc ClaimDevice (ClaimDeviceRequest) returns (ClaimDeviceResponse);
+
+  // RevokeDevice here should delete all config for the device stored within
+  // the device registration service, which must also delete all streams by
+  // calling down to the stream encoder.
+  rpc RevokeDevice (RevokeDeviceRequest) returns (RevokeDeviceResponse);
+}
+
+message ClaimDeviceRequest {
+  string device_token = 1;
+  string user_uid = 2;
+}
+
+message ClaimDeviceResponse {
+  string user_private_key = 1;
+  string user_public_key = 2;
+  string device_public_key = 3;
+}
+
+message RevokeDeviceRequest {
+  string device_token = 1;
+  string user_public_key = 1;
+}
+
+message RevokeDeviceResponse {
+}
