@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package decode.thingful.encoder;
+option go_package = "encoder";
+
+service Encoder {
+  rpc CreateStream (CreateStreamRequest) returns (CreateStreamResponse);
+  rpc DeleteStream (DeleteStreamRequest) returns (DeleteStreamResponse);
+}
+
+message CreateStreamRequest {
+  string broker_address = 1;
+  string topic = 2;
+  string public_key = 3;
+  string user_uid = 4;
+  string entitlement_policy_uid = 5;
+}
+
+message CreateStreamResponse {
+  string stream_uid = 1;
+}
+
+message DeleteStreamRequest {
+  string stream_uid = 1;
+}
+
+message DeleteStreamResponse {
+}
