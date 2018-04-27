@@ -10,7 +10,7 @@ service Encoder {
 
 message CreateStreamRequest {
   string broker_address = 1;
-  string topic = 2;
+  string device_topic = 2;
   string public_key = 3;
   string user_uid = 4;
   string entitlement_policy_uid = 5;
