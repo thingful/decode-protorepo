@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package decode.thingful.datastore;
+option go_package = "datastore";
+
+import "google/protobuf/timestamp.proto";
+
+service Datastore {
+  rpc WriteData (WriteRequest) returns (WriteResponse);
+  rpc ReadData (ReadRequest) returns (ReadResponse);
+  rpc DeleteData (DeleteRequest) returns (DeleteResponse);
+}
+
+message WriteRequest {
+  string public_key = 1;
+  string user_uid = 2;
+  string entitlement_policy_uid = 3;
+  bytes data = 3;
+}
+
+message WriteResponse {
+}
+
+message ReadRequest {
+  string public_key = 1;
+  string entitlement_policy_uid = 2;
+  google.protobuf.Timestamp start_time = 3;
+  google.protobuf.Timestamp end_time = 4;
+  string page_cursor = 5;
+  uint32 page_size = 6;
+}
+
+message EncryptedEvent {
+  google.protobuf.Timestamp event_time = 1;
+  bytes data = 2;
+}
+
+message ReadResponse {
+  string public_key = 1;
+  string entitlement_policy_uid = 2;
+  string next_page_cursor = 3;
+  repeated EncryptedEvent events = 4;
+}
+
+message DeleteRequest {
+  string user_uid = 1;
+}
+
+message DeleteResponse {
+}
