@@ -3,26 +3,88 @@ syntax = "proto3";
 package decode.thingful.encoder;
 option go_package = "encoder";
 
+// Encoder is the basic interface proposed for the stream encoder component for
+// DECODE. It currently just exposes two methods which allow for encoded streams
+// to be created and destroyed. Creating a stream means setting up a
+// subscription to an MQTT broker such that we start receiving events for a
+// specific device. These events are then encrypted using the supplied
+// credentials, and then written upstream to our encrypted datastore. Once a
+// stream has been created it continues running indefinitely until receiving a
+// call to delete the stream.
+//
+// Later iterations of this service will implement filtering and aggregation
+// operations on the stream, but for now all data is simply passed through to
+// the datastore.
 service Encoder {
+  // CreateStream sets up a new encoded stream for the encoder. Here we
+  // subscribe to the specified MQTT topic, save the encryption keys, and start
+  // listening for events. On receiving incoming messages via the MQTT broker,
+  // we encrypt the contents using Zenroom and then write the encrypted data to
+  // the configured datastore.
   rpc CreateStream (CreateStreamRequest) returns (CreateStreamResponse);
+
+  // DeleteStream is called to remove the configuration for an encoded data
+  // stream. This means deleting the MQTT subscription and removing all saved
+  // credentials.
   rpc DeleteStream (DeleteStreamRequest) returns (DeleteStreamResponse);
 }
 
+// CreateStreamRequest is the message sent in order to create a new encoded
+// stream. All fields are mandatory, and the end result of the call will be a
+// configured stream that receives messages, encrypts them and sends them on to
+// the configured datastore.
 message CreateStreamRequest {
+  // The address of the MQTT broker to which we should subscribe.
+  // This is a required field.
   string broker_address = 1;
+
+  // The topic to which the encoder must subscribe - this will typically just be
+  // the device_token sent from the client to start the process.
+  // This is a required field.
   string device_topic = 2;
-  string public_key = 3;
-  string user_uid = 4;
-  string entitlement_policy_uid = 5;
+
+  // The private key for the device which the encoder will use in order to
+  // encrypt data for the recipient.
+  // This is a required field.
+  string device_private_key = 3;
+
+  // The public key of the recipient, again this is used in order to encrypt
+  // outgoing data, as well as being used to signify to the datastore the bucket
+  // in which data should be stored.
+  // This is a required field.
+  string recipient_public_key = 4;
+
+  // The identifier of the user for which the stream is being created. This is
+  // included as we also need to tell this information to the datastore so that
+  // data for this user can be deleted if they so desire.
+  // This is a required field.
+  string user_uid = 5;
+
+  // The identifier of the specific entitlement policy for which this stream
+  // should save data. This is used when writing data to the datastore. This
+  // value is required when reading from the datastore.
+  // This is a required field.
+  string entitlement_policy_uid = 6;
 }
 
+// CreateStreamResponse is the message returned from the stream encoder after it
+// successfully creates a stream. The device registration service should keep a
+// record of this value so that it is able to delete the stream if required.
 message CreateStreamResponse {
+  // An identifier for the stream which can be used in order to delete a stream
+  // when required.
   string stream_uid = 1;
 }
 
+// DeleteStreamRequest is the message sent to the encoder in order to delete a
+// configured stream. Sending this message must delete the MQTT subscription, as
+// well as deleting all encryption credentials stored on the encoder.
 message DeleteStreamRequest {
+  // The identifier for the stream to be deleted.
   string stream_uid = 1;
 }
 
+// DeleteStreamResponse is a placeholder response message on a successful
+// deletion of stream on the encoder.
 message DeleteStreamResponse {
 }

@@ -3,11 +3,20 @@ syntax = "proto3";
 package decode.thingful.devicereg;
 option go_package = "devicereg";
 
+// DeviceRegistration is our service that provides the top level interface which
+// starts the process of claiming a device and ultimately create entitlements.
+// This service will eventually be the service that orchestrates the flow
+// between the DECODE wallet, and SmartCitizen's onboarding process and provide
+// the mechanism for managing entitlements via the wallet. For now we simply
+// expose two methods which allow a simulated device to be claimed and revoked.
 service DeviceRegistration {
-  // ClaimDevice here is what starts the flow off. It takes as input a device
-  // token (identifying the device), and a user uid (which is the decode user
-  // id). In this model there is no entitlement policy as such, so this step
-  // would also call down to the encoder to create a stream for the user.
+  // ClaimDevice here is what starts the flow off of registering and configuring
+  // a device. It takes as input a message containing a device token
+  // (identifying the device), a user uid (which is the decode user id), as well
+  // as the devices real world location and some other metadata about the
+  // device. The outcome of this call in the first iteration of the system, is
+  // that we would call down to the stream encoder to create an encrypted stream
+  // for the device that will be accessible from the datastore.
   rpc ClaimDevice (ClaimDeviceRequest) returns (ClaimDeviceResponse);
 
   // RevokeDevice here should delete all config for the device stored within
@@ -16,21 +25,77 @@ service DeviceRegistration {
   rpc RevokeDevice (RevokeDeviceRequest) returns (RevokeDeviceResponse);
 }
 
+// ClaimDeviceRequest is the message we send in order to initially claim that a
+// specific user owns a device. This message contains the device token (which
+// identifies the device), the individual's DECODE user id as well as some
+// metadata about the device. Currently this is just the lat/long location of
+// the device, and an enumarated value describing whether the claimed device is
+// situated indoors or outdoors.
+// As a result of this message the device registration service creates a key
+// pair for the device as well as a key pair for the user.
 message ClaimDeviceRequest {
+  // The unique identifier for the device. Note this isn't a hardware identifier
+  // as the same physical device may go to multiple recipients, rather it
+  // represents the logical ID of the device as currently claimed. This comes
+  // from SmartCitizen's onboarding process ultimately.
   string device_token = 1;
+
+  // A unique identifier for the user which should come from the DECODE wallet
+  // ultimately.
   string user_uid = 2;
+
+  // A nested type capturing the location of the device expressed via decimal
+  // long/lat pair.
+  message Location {
+    // The longitude expressed as a decimal.
+    double longitude = 1;
+
+    // The latitude expressed as a decimal.
+    double latitude = 2;
+  }
+
+  // An enumeration which allows us to express whether the device will be
+  // located indoors or outdoors when deployed.
+  enum Disposition {
+    INDOOR = 0;
+    OUTDOOR = 1;
+  }
+
+  // The specific disposition of the device, i.e. is this instance indoors or
+  // outdoors.
+  Disposition disposition = 5;
 }
 
+// ClaimDeviceResponse is the message returned after successfully claiming a
+// device. We return here a key pair for the user, as well as a public key for
+// the device. The corresponding private key is used within the stream encoder
+// in order to encrypt data for the device.
 message ClaimDeviceResponse {
+  // The private part of a key pair for the individual user.
   string user_private_key = 1;
+
+  // The public part of a key pair representing the individual user.
   string user_public_key = 2;
+
+  // The public key for the device (TODO - is this useful for any reason?)
   string device_public_key = 3;
 }
 
+// RevokeDeviceRequest is a message sent to the registration service by which a
+// user can revoke a previous claim on a device. This should result in all
+// configuration for the device being deleted from registration services store,
+// as well removing any stream encoding configurations.
 message RevokeDeviceRequest {
+  // The unique token identifying the device.
   string device_token = 1;
-  string user_public_key = 1;
+
+  // The user's public key, serving here just to prove that the user actually is
+  // the entity that previously claimed the device.
+  string user_public_key = 2;
 }
 
+// RevokeDeviceResponse is a placeholder response returned from a revoke
+// request. Currently empty, but reserved for any fields identified for future
+// iterations.
 message RevokeDeviceResponse {
 }
