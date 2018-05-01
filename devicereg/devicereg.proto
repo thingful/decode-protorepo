@@ -54,6 +54,9 @@ message ClaimDeviceRequest {
     double latitude = 2;
   }
 
+  // The location of the device to be claimed.
+  Location location = 3;
+
   // An enumeration which allows us to express whether the device will be
   // located indoors or outdoors when deployed.
   enum Disposition {
@@ -63,7 +66,7 @@ message ClaimDeviceRequest {
 
   // The specific disposition of the device, i.e. is this instance indoors or
   // outdoors.
-  Disposition disposition = 5;
+  Disposition disposition = 4;
 }
 
 // ClaimDeviceResponse is the message returned after successfully claiming a
