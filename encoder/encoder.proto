@@ -65,6 +65,30 @@ message CreateStreamRequest {
   // value is required when reading from the datastore.
   // This is a required field.
   string entitlement_policy_uid = 6;
+
+  // A nested type capturing the location of the device expressed via decimal
+  // long/lat pair.
+  message Location {
+    // The longitude expressed as a decimal.
+    double longitude = 1;
+
+    // The latitude expressed as a decimal.
+    double latitude = 2;
+  }
+
+  // The location of the device to be claimed.
+  Location location = 7;
+
+  // An enumeration which allows us to express whether the device will be
+  // located indoors or outdoors when deployed.
+  enum Disposition {
+    INDOOR = 0;
+    OUTDOOR = 1;
+  }
+
+  // The specific disposition of the device, i.e. is this instance indoors or
+  // outdoors.
+  Disposition disposition = 8;
 }
 
 // CreateStreamResponse is the message returned from the stream encoder after it
