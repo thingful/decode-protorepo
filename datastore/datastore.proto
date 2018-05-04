@@ -127,8 +127,12 @@ message ReadResponse {
 // only use case we know we have to support is being able to delete an
 // individual user's data.
 message DeleteRequest {
+  // The public key is the key identifying the party for which data has been
+  // encrypted. This field is required.
+  string public_key = 1;
+
   // The id of the user who wishes to have their data removed from the datastore.
-  string user_uid = 1;
+  string user_uid = 2;
 }
 
 // DeleteResponse is a placeholder message we return from the delete call.
