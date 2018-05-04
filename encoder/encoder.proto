@@ -60,12 +60,6 @@ message CreateStreamRequest {
   // This is a required field.
   string user_uid = 5;
 
-  // The identifier of the specific entitlement policy for which this stream
-  // should save data. This is used when writing data to the datastore. This
-  // value is required when reading from the datastore.
-  // This is a required field.
-  string entitlement_policy_uid = 6;
-
   // A nested type capturing the location of the device expressed via decimal
   // long/lat pair.
   message Location {
@@ -77,7 +71,7 @@ message CreateStreamRequest {
   }
 
   // The location of the device to be claimed.
-  Location location = 7;
+  Location location = 6;
 
   // An enumeration which allows us to express whether the device will be
   // located indoors or outdoors when deployed.
@@ -88,7 +82,7 @@ message CreateStreamRequest {
 
   // The specific disposition of the device, i.e. is this instance indoors or
   // outdoors.
-  Disposition disposition = 8;
+  Disposition disposition = 7;
 }
 
 // CreateStreamResponse is the message returned from the stream encoder after it

@@ -28,16 +28,11 @@ message WriteRequest {
   // persist this in order to allow the user to delete stored data.
   string user_uid = 2; // required
 
-  // The entitlement policy uid is the id of a specific entitlement policy. We
-  // pass this in as well in order to allow multiple datasets or buckets for a
-  // single encryption key.
-  string entitlement_policy_uid = 3; // required
-
   // The data field here is the encrypted data to be stored for the specified
   // public key/entitlement policy. From the datastore's perspective this can
   // just be a slice of bytes, however zenroom does permit this data to maintain
   // some structure.
-  bytes data = 4; // required
+  bytes data = 3; // required
 }
 
 // WriteResponse is a placeholder message returned from the call to write data
@@ -57,29 +52,23 @@ message ReadRequest {
   // encrypted. This field is required.
   string public_key = 1;
 
-  // The entitlement policy uid is a unique identifier for the specify
-  // entitlement policy for which the client is requesting data. This is
-  // distinct from the public key as we may have multiple sets of data for the
-  // same recipient. This field is required.
-  string entitlement_policy_uid = 2;
-
   // The start time represents the start of an interval for which we wish to read
   // data. This field is optional, but if nil end_time must also be nil. It is
   // an error for start_time to be after end_time.
-  google.protobuf.Timestamp start_time = 3;
+  google.protobuf.Timestamp start_time = 2;
 
   // The end time represents the end of an interval for which we wish to read
   // data. It may be nil, in which case it defaults to "now".
-  google.protobuf.Timestamp end_time = 4;
+  google.protobuf.Timestamp end_time = 3;
 
   // The page cursor is an opaque string value returned from a previous call to to
   // `ReadData` that can be used to control from where pagination should
   // continue from. This field is optional.
-  string page_cursor = 5;
+  string page_cursor = 4;
 
   // The maximum number of encrypted events to return in the response. The
   // default value is 500.
-  uint32 page_size = 6;
+  uint32 page_size = 5;
 }
 
 // EncryptedEvent is a message representing a single instance of encrypted data
@@ -111,17 +100,11 @@ message ReadResponse {
   // field will always have a non-empty value.
   string public_key = 1;
 
-  // The id of the specific entitlement policy for which this response contains
-  // data. This is separate from the public key as a single recipient might be
-  // set up to receive data to which different filtering has been applied.
-  // This field will always have a non-empty value.
-  string entitlement_policy_uid = 2;
-
   // The list of encrypted events containing the actual data being requested.
   // This list will be returned in ascending time order, and each element
   // contains a timestamp as well as the actual chunk of encrypted data. If no
   // data is available this will be an empty list.
-  repeated EncryptedEvent events = 3;
+  repeated EncryptedEvent events = 2;
 
   // An optional field containing a pointer to the next page of results
   // expressed as an opaque string. Clients should not expect to be able to
@@ -130,12 +113,12 @@ message ReadResponse {
   // to see if it is an empty string or contains a value, and if any value is
   // present, the client can pass it back in a new read request as the value of
   // the page_cursor field.
-  string next_page_cursor = 4;
+  string next_page_cursor = 3;
 
   // The page size that was originally requested to create this response.
   // Supplied to make it easy for the client to construct a new request for the
   // next page.
-  uint32 page_size = 5;
+  uint32 page_size = 4;
 }
 
 // DeleteRequest is a message that is sent to the server in order to delete
