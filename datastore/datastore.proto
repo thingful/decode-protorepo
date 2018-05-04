@@ -10,8 +10,27 @@ import "google/protobuf/timestamp.proto";
 // methods, to write and read data, as well as a method to delete data for a
 // user.
 service Datastore {
+  // WriteData is our function call that writes a single encrypted data event to
+  // the underlying storage substrate. It takes a WriteRequest containing the
+  // actual data to be stored along with public key of the bucket for which data
+  // should be persisted and the submitting user's DECODE user id. THese
+  // additional attributes allow us to request the data from the bucket by
+  // public key, and delete the data by user uid.
   rpc WriteData (WriteRequest) returns (WriteResponse);
+
+  // ReadData is used to request data from the data store. Data is requested
+  // keyed by the public key used to encrypt it (encoded as a Base64 or hex
+  // string probably). In addition a read request allows the client to specify a
+  // time interval so that data is only retrieved if it was recorded within the
+  // interval. Pagination is supported to allow for large intervals to be
+  // requested without having to return all the data in one hit.
   rpc ReadData (ReadRequest) returns (ReadResponse);
+
+  // DeleteData allows a client to delete data from a bucket for an individual
+  // user. The incoming delete request uses both the public key which identifies
+  // the bucket, but also requires a user uid. The result of this call is that
+  // all data for this user will have been removed from the datastore, but other
+  // data will be unaffected.
   rpc DeleteData (DeleteRequest) returns (DeleteResponse);
 }
 
