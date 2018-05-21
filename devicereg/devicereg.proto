@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package decode.thingful.devicereg;
+package devicereg;
 option go_package = "devicereg";
 
 // DeviceRegistration is our service that provides the top level interface which

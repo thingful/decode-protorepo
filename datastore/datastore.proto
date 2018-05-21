@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package decode.thingful.datastore;
+package datastore;
 option go_package = "datastore";
 
 import "google/protobuf/timestamp.proto";
@@ -10,8 +10,27 @@ import "google/protobuf/timestamp.proto";
 // methods, to write and read data, as well as a method to delete data for a
 // user.
 service Datastore {
+  // WriteData is our function call that writes a single encrypted data event to
+  // the underlying storage substrate. It takes a WriteRequest containing the
+  // actual data to be stored along with public key of the bucket for which data
+  // should be persisted and the submitting user's DECODE user id. THese
+  // additional attributes allow us to request the data from the bucket by
+  // public key, and delete the data by user uid.
   rpc WriteData (WriteRequest) returns (WriteResponse);
+
+  // ReadData is used to request data from the data store. Data is requested
+  // keyed by the public key used to encrypt it (encoded as a Base64 or hex
+  // string probably). In addition a read request allows the client to specify a
+  // time interval so that data is only retrieved if it was recorded within the
+  // interval. Pagination is supported to allow for large intervals to be
+  // requested without having to return all the data in one hit.
   rpc ReadData (ReadRequest) returns (ReadResponse);
+
+  // DeleteData allows a client to delete data from a bucket for an individual
+  // user. The incoming delete request uses both the public key which identifies
+  // the bucket, but also requires a user uid. The result of this call is that
+  // all data for this user will have been removed from the datastore, but other
+  // data will be unaffected.
   rpc DeleteData (DeleteRequest) returns (DeleteResponse);
 }
 
@@ -61,9 +80,13 @@ message ReadRequest {
   // data. It may be nil, in which case it defaults to "now".
   google.protobuf.Timestamp end_time = 3;
 
-  // The page cursor is an opaque string value returned from a previous call to to
-  // `ReadData` that can be used to control from where pagination should
-  // continue from. This field is optional.
+  // The page cursor is an opaque string that an implementing server can
+  // understand in order to efficiently paginate through events.  The value
+  // sent here cannot be calculated by the client, rather they should just
+  // inspect value returned from a previous call to to `ReadData` and if this a
+  // non-empty string, then this value can be sent back to the server to get
+  // the "next" page of results.
+  // This field is optional.
   string page_cursor = 4;
 
   // The maximum number of encrypted events to return in the response. The
@@ -84,6 +107,10 @@ message EncryptedEvent {
 
   // The opaque chunk of bytes comprising the encoded data from the device.
   bytes data = 2;
+
+  // An identifier for an individual event. Used internally when sorting and
+  // paginating.
+  int64 event_id = 3;
 }
 
 // ReadResponse is the top level message returned by the read operations to the
