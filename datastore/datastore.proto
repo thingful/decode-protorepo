@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package decode.thingful.datastore;
+package datastore;
 option go_package = "datastore";
 
 import "google/protobuf/timestamp.proto";
@@ -80,9 +80,13 @@ message ReadRequest {
   // data. It may be nil, in which case it defaults to "now".
   google.protobuf.Timestamp end_time = 3;
 
-  // The page cursor is an opaque string value returned from a previous call to to
-  // `ReadData` that can be used to control from where pagination should
-  // continue from. This field is optional.
+  // The page cursor is an opaque string that an implementing server can
+  // understand in order to efficiently paginate through events.  The value
+  // sent here cannot be calculated by the client, rather they should just
+  // inspect value returned from a previous call to to `ReadData` and if this a
+  // non-empty string, then this value can be sent back to the server to get
+  // the "next" page of results.
+  // This field is optional.
   string page_cursor = 4;
 
   // The maximum number of encrypted events to return in the response. The
@@ -103,6 +107,10 @@ message EncryptedEvent {
 
   // The opaque chunk of bytes comprising the encoded data from the device.
   bytes data = 2;
+
+  // An identifier for an individual event. Used internally when sorting and
+  // paginating.
+  int64 event_id = 3;
 }
 
 // ReadResponse is the top level message returned by the read operations to the

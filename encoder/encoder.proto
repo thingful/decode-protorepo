@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package decode.thingful.encoder;
+package encoder;
 option go_package = "encoder";
 
 // Encoder is the basic interface proposed for the stream encoder component for
