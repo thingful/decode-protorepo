@@ -14,13 +14,15 @@ function buildDir {
   target=$(basename $currentDir)
 
   if [ -f .protolangs ]; then
-    echo "Building directory: '$currentDir'"
+    print "Building directory: '$currentDir'"
 
     while read lang; do
       repo="twirp-$target-$lang"
       build_dir="$BUILD_DIR/$repo"
 
-      mkdir -p "$build_dir"
+      rm -rf "$build_dir"
+      print "Cloning repo: git@github.com:thingful/$repo.git"
+      git clone "git@github.com:thingful/$repo.git" "$build_dir"
 
       case "$lang" in
         go)
@@ -36,9 +38,12 @@ function buildDir {
           ;;
 
         *)
-          echo "Unknown language - currently supported languages are: go, ruby, js"
+          echo "--> Unknown language - currently supported languages are: go, ruby, js"
           exit 1
       esac
+
+      commitAndPush "$build_dir"
+
     done < .protolangs
   fi
 
@@ -47,7 +52,7 @@ function buildDir {
 
 # Finds all directories and builds proto buffer definitions
 function buildAll {
-  echo "Building protocol buffer stubs"
+  print "Building protocol buffer stubs"
 
   clean
 
@@ -58,9 +63,32 @@ function buildAll {
 
 # Cleans our build directories
 function clean {
-  echo "Cleaning build directories"
+  print "Cleaning build directories"
 
   rm -rf "$BUILD_DIR"
 }
 
-buildAll
+function commitAndPush {
+  print "Committing and pushing from $1"
+
+  pushd "$1" > /dev/null
+
+  git add -N .
+
+  if ! git diff --exit-code > /dev/null; then
+    print "Changes detected"
+    git add .
+    git commit -m "Automatic rebuild of Twirp stubs"
+    git push origin HEAD
+  else
+    print "No changes detected for $1"
+  fi
+
+  popd > /dev/null
+}
+
+function print {
+  echo "--> $1"
+}
+
+"$@"
