@@ -42,7 +42,12 @@ function buildDir {
           exit 1
       esac
 
-      commitAndPush "$build_dir"
+      sed -e "s|ARG_REPO_NAME|$repo|g" \
+          -e "s|ARG_LANG|$lang|g" \
+          -e "s|ARG_TARGET|$target|g" \
+          "$DIR/.README.template" > "$build_dir/README.md"
+
+      # commitAndPush "$build_dir"
 
     done < .protolangs
   fi
