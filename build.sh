@@ -11,7 +11,7 @@ function buildDir {
 
   pushd "$currentDir" > /dev/null
 
-  target=$(basename $currentDir)
+  target=$(basename "$currentDir")
 
   if [ -f .protolangs ]; then
     print "Building directory: '$currentDir'"
@@ -26,19 +26,19 @@ function buildDir {
 
       case "$lang" in
         go)
-          protoc --proto_path=. --twirp_out="$build_dir" --go_out="$build_dir" *.proto
+          protoc --proto_path=. --twirp_out="$build_dir" --go_out="$build_dir" ./*.proto
           ;;
 
         ruby)
-          protoc --proto_path=. --ruby_out="$build_dir" --twirp_ruby_out="$build_dir" *.proto
+          protoc --proto_path=. --ruby_out="$build_dir" --twirp_ruby_out="$build_dir" ./*.proto
           ;;
 
         node)
-          protoc --twirp_out="$build_dir" --twirp_js_out="$build_dir" --js_out="import_style=commonjs,binary:$build_dir" *.proto
+          protoc --twirp_out="$build_dir" --twirp_js_out="$build_dir" --js_out="import_style=commonjs,binary:$build_dir" ./*.proto
           ;;
 
         *)
-          echo "--> Unknown language - currently supported languages are: go, ruby, js"
+          print "Unknown language - currently supported languages are: go, ruby, js"
           exit 1
       esac
 
@@ -47,7 +47,9 @@ function buildDir {
           -e "s|ARG_TARGET|$target|g" \
           "$DIR/.README.template" > "$build_dir/README.md"
 
-      # commitAndPush "$build_dir"
+      cp -f "$DIR/LICENSE" "$build_dir/LICENSE"
+
+      commitAndPush "$build_dir"
 
     done < .protolangs
   fi
