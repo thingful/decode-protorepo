@@ -29,6 +29,22 @@ Devices publish using the topic `device/sck/device_token:/readings` and the expe
 
 * Messages must be published using QoS (Quality of Service) of 1.
 
+#### Using real data
+
+You can use [Mosquitto](https://mosquitto.org/) to test your system:
+
+* Listen to all MQTT data coming from other devices:
+
+	`$ mosquitto_sub --host mqtt.smartcitizen.me --port 8883 --id decode_test_sub --topic device/sck/+/readings --cafile DST_Root_CA_X3.pem`
+
+* Publish and subscribe to your own data:
+
+	`$ mosquitto_pub --host mqtt.smartcitizen.me --port 8883 --id decode_test --topic device/sck/decode_test/readings --message '{"data":[{"recorded_at":"2018-01-11T17:52:51Z","sensors":[{"id":10,"value":95},{"id":29,"value":66.35234},{"id":13,"value":39.21178},{"id":12,"value":25.55512},{"id":14,"value":578.6607}]}]}' --qos 1 --cafile DST_Root_CA_X3.pem`
+
+	`$ mosquitto_sub --host mqtt.smartcitizen.me --port 8883 --id decode_test_sub --topic device/sck/decode_test/readings --cafile DST_Root_CA_X3.pem`
+
+* The connections use MQTTS (MQTT over TLS) and you will need to provide to mosquitto the path of your system DST_Root_CA_X3 root certificate as `--cafile DST_Root_CA_X3.pem`. You can also connect using plain MQTT by removing the `--cafile` option and changing the port to `--port 1883`.
+
 ### Registering Subscriptions
 
 We use the EMQ 2.0(http://emqtt.io) MQTT broker:
