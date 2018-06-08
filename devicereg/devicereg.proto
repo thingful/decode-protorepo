@@ -37,24 +37,28 @@ message ClaimDeviceRequest {
   // The unique identifier for the device. Note this isn't a hardware identifier
   // as the same physical device may go to multiple recipients, rather it
   // represents the logical ID of the device as currently claimed. This comes
-  // from SmartCitizen's onboarding process ultimately.
+  // from SmartCitizen's onboarding process ultimately. This is a required field
   string device_token = 1;
 
+  // The address of the MQTT broker to which the specified device is configured
+  // to publish data. This is a required field.
+  string broker = 5;
+
   // A unique identifier for the user which should come from the DECODE wallet
-  // ultimately.
+  // ultimately. This is a required field.
   string user_uid = 2;
 
   // A nested type capturing the location of the device expressed via decimal
   // long/lat pair.
   message Location {
-    // The longitude expressed as a decimal.
+    // The longitude expressed as a decimal. This is a required field.
     double longitude = 1;
 
-    // The latitude expressed as a decimal.
+    // The latitude expressed as a decimal. This is a required field.
     double latitude = 2;
   }
 
-  // The location of the device to be claimed.
+  // The location of the device to be claimed. This is a required field.
   Location location = 3;
 
   // An enumeration which allows us to express whether the device will be
@@ -65,7 +69,7 @@ message ClaimDeviceRequest {
   }
 
   // The specific disposition of the device, i.e. is this instance indoors or
-  // outdoors.
+  // outdoors. If not specified the default value is INDOOR.
   Disposition disposition = 4;
 }
 
