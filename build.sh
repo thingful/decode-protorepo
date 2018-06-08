@@ -49,7 +49,9 @@ function buildDir {
 
       cp -f "$DIR/LICENSE" "$build_dir/LICENSE"
 
-      commitAndPush "$build_dir"
+      if [ "$2" = true ]; then
+        commitAndPush "$build_dir"
+      fi
 
     done < .protolangs
   fi
@@ -64,7 +66,7 @@ function buildAll {
   clean
 
   find "$DIR" -type d -not -path '*/\.*' | while read d; do
-    buildDir "$d"
+    buildDir "$d" "${1:-false}"
   done
 }
 
@@ -72,6 +74,7 @@ function buildAll {
 function clean {
   print "Cleaning build directories"
 
+  echo $BUILD_DIR
   rm -rf "$BUILD_DIR"
 }
 
