@@ -23,6 +23,18 @@ service DeviceRegistration {
   // the device registration service, which must also delete all streams by
   // calling down to the stream encoder.
   rpc RevokeDevice (RevokeDeviceRequest) returns (RevokeDeviceResponse);
+
+  // CreateEntitlementPolicy is a method exposed by the service which allows a
+  // new entitlement policy to be created and stored within the device
+  // registration service. Once a policy has been created, users will then be
+  // able to apply this policy to their devices via the wallet.
+  rpc CreateEntitlementPolicy (CreateEntitlementPolicyRequest) returns (CreateEntitlementPolicyResponse);
+
+  rpc DeleteEntitlementPolicy (DeleteEntitlementPolicyRequest) returns (DeleteEntitlementPolicyResponse);
+
+  rpc ApplyEntitlement (ApplyEntitlementRequest) returns (ApplyEntitlementResponse);
+
+  rpc RevokeEntitlement (RevokeEntitlementRequest) returns (RevokeEntitlementResponse);
 }
 
 // ClaimDeviceRequest is the message we send in order to initially claim that a
@@ -106,4 +118,71 @@ message RevokeDeviceRequest {
 // request. Currently empty, but reserved for any fields identified for future
 // iterations.
 message RevokeDeviceResponse {
+}
+
+// Entitlement is a message used to describe an operation that may be applied to
+// a specific data type published by a SmartCitizen device. The message contains
+// two required fields: the sensor_id (this is the type of data we are entitling
+// over), and a specified operation to be performed on that sensor type. This
+// can be one of three actions: to share the sensor without modification, to
+// apply a binning algorithm to the data so we output a bucketed value, or a
+// moving average calculated dynamically for incoming values.
+//
+// If an titlement specifies an Action type of `BIN`, then the optional
+// `buckets` parameter is required, similarly if an action type of `MOVING_AVG`
+// is specified, then `interval` is a required field.
+message Entitlement {
+  // The unique id of the sensor type for which this specific entitlement is defined. This is a required field.
+  uint32 sensor_id = 1;
+
+  // An enumeration which allows us to specify what type of sharing is to be
+  // defined for the specified sensor type. The default value is `SHARE` which
+  // implies sharing the data at full resolution. If this type is specified, it
+  // is an error if either of `buckets` or `interval` is also supplied.
+  enum Action {
+    SHARE = 0;
+    BIN = 1;
+    MOVING_AVG = 2;
+  }
+
+  // The specific action this entitlement defines for the sensor type. This is a
+  // required field.
+  Action action = 1;
+
+  // The buckets attribute is used to specify the the buckets or bins into which
+  // incoming values should be stored. Each element in the list is the upper
+  // inclusive bound of a bucket. The values submitted must be sorted in
+  // strictly increasing order. There is no need to add a highest bucket with
+  // +Inf bound, it will be added implicitly. This field is optional unless an
+  // Action of `BIN` has been requested, in which case it is required. It is an
+  // error to send values for this attribute unless the value of Action is
+  // `BIN`.
+  repeated double buckets = 2;
+
+  // This attribute is used to control the entitlement in the case for which we
+  // have specified an action type representing a moving average. It represents
+  // the interval in seconds over which the moving average should be calculated,
+  // e.g. for a 15 minute moving average the value supplied here would be 900.
+  // This field is optional unless an Action of `MOVING_AVG` has been specified,
+  // in which case it is required. It is an error to send a value for this
+  // attribute unless the value of Action is `MOVING_AVG`.
+  uint32 interval = 3;
+}
+
+// CreateEntitlementPolicyRequest is a message sent to the device registration
+// service to create a new entitlement policy. An entitlement policy is a
+// collection of one or more "Entitlements". A single Entitlement specifies an
+// operation to be performed on a single data channel being published by a
+// SmartCitizen device. The policy as a whole is comprised of one or more
+// Entitlements.
+message CreateEntitlementPolicyRequest {
+  repeated Entitlement entitlements = 1;
+}
+
+// CreateEntitlementPolicyResponse is a message returned by the service after a
+// policy has been created. It contains just the id of the newly created policy
+// which can then be used to delete the policy for a user with authorization to
+// perform this operation.
+message CreateEntitlementPolicyResponse {
+  string policy_id = 1;
 }
