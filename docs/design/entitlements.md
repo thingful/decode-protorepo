@@ -1,8 +1,18 @@
-# Entitlements
+# Proposal - a proposal for defining entitlements DECODE IoT Pilot
+
+This document contains a brief and high level design approach to defining and
+working with entitlements for the DECODE IoT Pilot. The following information
+was used in order to come up with a refined protocol buffer definition for
+the service interface, so the information shown below is incomplete and
+slightly disjointed.
+
+For a clearer view of what is being proposed below I recommend looking at the
+protobuf definition in the `devicereg` folder of this repository called
+`devicereg.proto`.
 
 ## What does the incoming data look like for SmartCitizen?
 
-An example data packet:
+An example data packet published by SmartCitizen:
 
 ```json
 {
@@ -68,15 +78,28 @@ So here we have:
 
 - share sound level and light level without filtering:
 
-  [{"channelId": 29, "policy": {"type": "SHARE"}}, {"channelId": 14, "policy": {"type": "share"}}]
+  [{"sensorId": 29, "action": "SHARE"}, {"sensorId": 14, "action": "SHARE"}]
 
 - share sound level, binning into either below 40 dBC or above 40 dBC:
 
-  [{"channelId": 29, "policy": {"type": "BIN", "buckets": [40]}}]
+  [{"sensorId": 29, "action": "BIN", "buckets": [40]}]
 
 - share sound level, binning into either below 40 dbC, between 40 dBC and 100
   dBC, or above 100 dBC, share 15 minute moving average of ambient light
 
-  [{"channelId": 29, "policy": {"type": "BIN", "buckets": [40,100]}}, {"channelId": 14, "policy": {"type": "MOVING_AVG", "interval": 900}}]
+  [{"sensorId": 29, "action": "BIN", "buckets": [40,100]}, {"sensorId": 14, "action": "MOVING_AVG", "interval": 900}]
 
-In the above we are assuming the simple IoT pilot specific case, where we have a fixed list of channel ids that all device streams will emit, we don't need to worry about the structure of the incoming events (as this is also fixed).
+In the above we are assuming the simple IoT pilot specific case, where we
+have a fixed list of channel ids that all device streams will emit, we don't
+need to worry about the structure of the incoming events (as this is also
+fixed).
+
+## Issues
+
+The above method for specifying an entitlement assumes we ahead of time know
+the list of sensor types that SmartCitizen will be publishing. Nothing in the
+above model would work for generic IoT data messages that could be coming
+from anywhere. One approach to making this more general might be to change
+the sensorId field to being a JSON path expression for example meaning an
+entitlement could be applied to arbitrary JSON messages being received by the
+system.
