@@ -325,6 +325,13 @@ message EntitlementRequest {
 // where we apply entitlements to a device. Currently it has no attributes but
 // is kept as a separate type to allow for future extensions.
 message ApplyEntitlementResponse {
+  // This attribute contains the identifying token of the device as defined by
+  // SmartCitizen. This is a required field.
+  string device_token = 1;
+
+  // This attribute returns a list of the policy ids that have just been applied
+  // to the device.
+  repeated string policy_ids = 2;
 }
 
 // RevokeEntitlementResponse is a placeholder message type returned from a call
