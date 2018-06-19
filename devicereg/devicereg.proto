@@ -308,9 +308,11 @@ message EntitlementRequest {
   // SmartCitizen. This is a required field.
   string device_token = 1;
 
-  // This attribute contains the private key for the device previously generated
-  // by the device registration service. This is a required field.
-  string device_private_key = 2;
+  // This attribute contains the private key for the user previously generated
+  // by the device registration service. If this does not match with the user
+  // who has claimed the device, then this request will be viewed as invalid.
+  // This is a required field.
+  string user_private_key = 2;
 
   // This attribute contains a list of one or more policy ids which the caller
   // is requesting by applied to their device. This list must have 1 or more
