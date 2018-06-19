@@ -84,7 +84,9 @@ message CreateStreamRequest {
   // outdoors.
   Exposure exposure = 7;
 
-  message Configuration {
+  // A nested type which is used to capture a list of specific entitlements we
+  // define for the stream.
+  message Entitlement {
     // The unique id of the sensor type for which this specific configuration is
     // defined. This is a required field.
     uint32 sensor_id = 1;
@@ -122,11 +124,12 @@ message CreateStreamRequest {
     uint32 interval = 4;
   }
 
-  // The configurations field holds a repeated list of Configuration instances
-  // which each define a transformation operation for a specific sensor id. This
-  // field is required to include at least one configuration, else the stream
-  // will not produce any output. Passing an empty list will return an error.
-  repeated Configuration configurations = 8;
+  // The entitlements field holds a repeated list of Entitlement instances which
+  // each define a transformation operation for a specific sensor id. It is
+  // required to include at least one entitlement within the stream
+  // configuration, else the stream will not produce any output. Passing an
+  // empty list will therefore return an error.
+  repeated Entitlement entitlements = 8;
 }
 
 // CreateStreamResponse is the message returned from the stream encoder after it
