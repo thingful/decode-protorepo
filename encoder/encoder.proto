@@ -83,6 +83,50 @@ message CreateStreamRequest {
   // The specific exposure of the device, i.e. is this instance indoors or
   // outdoors.
   Exposure exposure = 7;
+
+  message Configuration {
+    // The unique id of the sensor type for which this specific configuration is
+    // defined. This is a required field.
+    uint32 sensor_id = 1;
+
+    // An enumeration which allows us to specify what type of sharing is to be
+    // defined for the specified sensor type. The default value is `SHARE` which
+    // implies sharing the data at full resolution. If this type is specified, it
+    // is an error if either of `buckets` or `interval` is also supplied.
+    enum Action {
+      SHARE = 0;
+      BIN = 1;
+      MOVING_AVG = 2;
+    }
+
+    // The specific action this entitlement defines for the sensor type. This is a
+    // required field.
+    Action action = 2;
+
+    // The bins attribute is used to specify the the bins into which incoming
+    // values should be classified. Each element in the list is the upper
+    // inclusive bound of a bin. The values submitted must be sorted in strictly
+    // increasing order. There is no need to add a highest bin with +Inf bound, it
+    // will be added implicitly. This field is optional unless an Action of `BIN`
+    // has been requested, in which case it is required. It is an error to send
+    // values for this attribute unless the value of Action is `BIN`.
+    repeated double bins = 3;
+
+    // This attribute is used to control the entitlement in the case for which we
+    // have specified an action type representing a moving average. It represents
+    // the interval in seconds over which the moving average should be calculated,
+    // e.g. for a 15 minute moving average the value supplied here would be 900.
+    // This field is optional unless an Action of `MOVING_AVG` has been specified,
+    // in which case it is required. It is an error to send a value for this
+    // attribute unless the value of Action is `MOVING_AVG`.
+    uint32 interval = 4;
+  }
+
+  // The configurations field holds a repeated list of Configuration instances
+  // which each define a transformation operation for a specific sensor id. This
+  // field is required to include at least one configuration, else the stream
+  // will not produce any output. Passing an empty list will return an error.
+  repeated Configuration configurations = 8;
 }
 
 // CreateStreamResponse is the message returned from the stream encoder after it
