@@ -78,16 +78,25 @@ So here we have:
 
 - share sound level and light level without filtering:
 
-  [{"sensorId": 29, "action": "SHARE"}, {"sensorId": 14, "action": "SHARE"}]
+```json
+[{ "sensorId": 29, "action": "SHARE" }, { "sensorId": 14, "action": "SHARE" }]
+```
 
 - share sound level, binning into either below 40 dBC or above 40 dBC:
 
-  [{"sensorId": 29, "action": "BIN", "buckets": [40]}]
+```json
+[{ "sensorId": 29, "action": "BIN", "buckets": [40] }]
+```
 
 - share sound level, binning into either below 40 dbC, between 40 dBC and 100
   dBC, or above 100 dBC, share 15 minute moving average of ambient light
 
-  [{"sensorId": 29, "action": "BIN", "buckets": [40,100]}, {"sensorId": 14, "action": "MOVING_AVG", "interval": 900}]
+```json
+[
+  { "sensorId": 29, "action": "BIN", "buckets": [40, 100] },
+  { "sensorId": 14, "action": "MOVING_AVG", "interval": 900 }
+]
+```
 
 In the above we are assuming the simple IoT pilot specific case, where we
 have a fixed list of channel ids that all device streams will emit, we don't
