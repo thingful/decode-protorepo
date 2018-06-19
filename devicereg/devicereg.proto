@@ -318,7 +318,7 @@ message EntitlementRequest {
   // is requesting by applied to their device. This list must have 1 or more
   // elements. If any of the ids specified in this list are not valid the service
   // will return an error and not create any of the specified streams.
-  repeated string policy_id = 3;
+  repeated string policy_ids = 3;
 }
 
 // ApplyEntitlementResponse is a placeholder message type returned from a call
