@@ -322,8 +322,7 @@ message EntitlementRequest {
 }
 
 // ApplyEntitlementResponse is a placeholder message type returned from a call
-// where we apply entitlements to a device. Currently it has no attributes but
-// is kept as a separate type to allow for future extensions.
+// where we apply entitlements to a device.
 message ApplyEntitlementResponse {
   // This attribute contains the identifying token of the device as defined by
   // SmartCitizen. This is a required field.
