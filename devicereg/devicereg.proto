@@ -203,7 +203,9 @@ message Entitlement {
 // SmartCitizen device. The policy as a whole is comprised of one or more
 // Entitlements.
 message CreateEntitlementPolicyRequest {
-  // The list of entitlements we wish to create for the policy.
+  // The list of entitlements we wish to create for the policy. This field is
+  // required, and it is required that the client supplies at least one
+  // Entitlement.
   repeated Entitlement entitlements = 1;
 }
 
