@@ -95,18 +95,17 @@ message ReadRequest {
 }
 
 // EncryptedEvent is a message representing a single instance of encrypted data
-// that is stored by the datastore. When reading data we return lists of this
-// type, which comprise a timestamp and a chunk of encoded data. From the
-// datastore's perspective the encrypted data can be viewed as just an opaque
-// chunk of bytes, however our encoding engine (Zenroom), does allow us to just
+// that has been stored by the datastore. When reading data we return lists of this
+// type, which comprise a timestamp and a stringified encoded data.
+// which will be decrypted by Zenroom, it does allow us to just
 // encrypt the values within a JSON structure, but for the datastore's purposes
 // we don't care about this.
 message EncryptedEvent {
   // The time at which the event was recorded by the datastore.
   google.protobuf.Timestamp event_time = 1;
 
-  // The opaque chunk of bytes comprising the encoded data from the device.
-  bytes data = 2;
+  // The data string comprising the encoded data from the device.
+  string data = 2;
 
   // An identifier for an individual event. Used internally when sorting and
   // paginating.
