@@ -60,10 +60,10 @@ message ReadRequest {
   // encrypted. This field is required.
   string public_key = 1;
 
-  // The start time represents the start of an interval for which we wish to read
-  // data. This field is optional, but if nil end_time must also be nil. It is
-  // an error for start_time to be after end_time.
-  google.protobuf.Timestamp start_time = 2;
+  // The start time represents the start of an interval for which we wish to
+  // read data. It is an error for start_time to be in the future or to be
+  // after end_time. This field is required.
+  google.protobuf.Timestamp start_time = 2; // required
 
   // The end time represents the end of an interval for which we wish to read
   // data. It may be nil, in which case it defaults to "now".
@@ -74,12 +74,12 @@ message ReadRequest {
   // sent here cannot be calculated by the client, rather they should just
   // inspect value returned from a previous call to to `ReadData` and if this a
   // non-empty string, then this value can be sent back to the server to get
-  // the "next" page of results.
-  // This field is optional.
+  // the "next" page of results.  This field is optional.
   string page_cursor = 4;
 
   // The maximum number of encrypted events to return in the response. The
-  // default value is 500.
+  // default value is 500. Returns an error if the caller requests a larger
+  // page size than the maximum.
   uint32 page_size = 5;
 }
 
