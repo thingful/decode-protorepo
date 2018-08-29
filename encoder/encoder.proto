@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package encoder;
+package decode.iot.encoder;
 option go_package = "encoder";
 
 // Encoder is the basic interface proposed for the stream encoder component for
@@ -44,22 +44,16 @@ message CreateStreamRequest {
   // This is a required field.
   string device_topic = 2;
 
-  // The private key for the device which the encoder will use in order to
-  // encrypt data for the recipient.
-  // This is a required field.
-  string device_private_key = 3;
-
   // The public key of the recipient, again this is used in order to encrypt
   // outgoing data, as well as being used to signify to the datastore the bucket
-  // in which data should be stored.
-  // This is a required field.
-  string recipient_public_key = 4;
+  // in which data should be stored.  This is a required field.
+  string recipient_public_key = 3;
 
   // The identifier of the user for which the stream is being created. This is
   // included as we also need to tell this information to the datastore so that
   // data for this user can be deleted if they so desire.
   // This is a required field.
-  string user_uid = 5;
+  string user_uid = 4;
 
   // A nested type capturing the location of the device expressed via decimal
   // long/lat pair.
@@ -72,7 +66,7 @@ message CreateStreamRequest {
   }
 
   // The location of the device to be claimed.
-  Location location = 6;
+  Location location = 5;
 
   // An enumeration which allows us to express whether the device will be
   // located indoors or outdoors when deployed.
@@ -83,11 +77,11 @@ message CreateStreamRequest {
 
   // The specific exposure of the device, i.e. is this instance indoors or
   // outdoors.
-  Exposure exposure = 7;
+  Exposure exposure = 6;
 
-  // A nested type which is used to capture a list of specific entitlements we
-  // define for the stream.
-  message Entitlement {
+  // A nested type which is used to capture a list of specific operations we
+  // perform the stream.
+  message Operation {
     // The unique id of the sensor type for which this specific configuration is
     // defined. This is a required field.
     uint32 sensor_id = 1;
@@ -125,13 +119,23 @@ message CreateStreamRequest {
     uint32 interval = 4;
   }
 
-  // The entitlements field holds a repeated list of Entitlement instances which
-  // each define a transformation operation for a specific sensor id. If no
-  // entitlements are submitted, we currently create a stream that writes
-  // through all received channels without applying any processing operations to
-  // the data, but if this field contains any elements, the resulting stream
+  // The entitlements field holds a repeated list of Operations which each
+  // define a transformational function for a specific sensor id. If no
+  // operations are submitted, we currently create a stream that writes
+  // through all received channels without applying any processing transformations
+  // to the data, but if this field contains any elements, the resulting stream
   // will only contain the specified sensor type.
-  repeated Entitlement entitlements = 8;
+  repeated Operation operations = 7;
+
+  // This attribute can be used to define whether or not the encoded stream
+  // should also attempt to obfuscate the real location of the user. This value
+  // represents a value in metres by which the location should be obfuscated,
+  // e.g. a value of 500 would mean obfuscate the precise location by 500
+  // metres. How the encoder chooses to implement obfuscation is not defined by
+  // this interface allowing different obfuscation algorithms to be
+  // implemented. If not supplied the default obfuscation is 0, i.e. don't
+  // obfuscate the location at all.
+  uint32 location_obfuscation_radius = 8;
 }
 
 // CreateStreamResponse is the message returned from the stream encoder after it
@@ -141,14 +145,23 @@ message CreateStreamResponse {
   // An identifier for the stream which can be used in order to delete a stream
   // when required.
   string stream_uid = 1;
+
+  // A secret token passed back to the caller which it must keep secret, in
+  // order to be permitted to delete the stream.
+  string token = 2;
 }
 
 // DeleteStreamRequest is the message sent to the encoder in order to delete a
 // configured stream. Sending this message must delete the MQTT subscription, as
 // well as deleting all encryption credentials stored on the encoder.
 message DeleteStreamRequest {
-  // The identifier for the stream to be deleted.
-  string stream_uid = 1;
+  // The identifier for the stream to be deleted. This is a required field.
+  string stream_uid = 1; // required
+
+  // The secret token that was returned to the caller when creating the stream.
+  // This is a required field, and must match the value stored internally for
+  // the stream.
+  string token = 2; // required
 }
 
 // DeleteStreamResponse is a placeholder response message on a successful
