@@ -26,15 +26,15 @@ function buildDir {
 
       case "$lang" in
         go)
-          protoc --proto_path=. --twirp_out="$build_dir" --go_out="$build_dir" ./*.proto
+          retool do protoc --proto_path=. --twirp_out="$build_dir" --go_out="$build_dir" ./*.proto
           ;;
 
         ruby)
-          protoc --proto_path=. --ruby_out="$build_dir" --twirp_ruby_out="$build_dir" ./*.proto
+          retool do protoc --proto_path=. --ruby_out="$build_dir" --twirp_ruby_out="$build_dir" ./*.proto
           ;;
 
         node)
-          protoc --twirp_out="$build_dir" --twirp_js_out="$build_dir" --js_out="import_style=commonjs,binary:$build_dir" ./*.proto
+          retool do protoc --twirp_out="$build_dir" --twirp_js_out="$build_dir" --js_out="import_style=commonjs,binary:$build_dir" ./*.proto
           ;;
 
         *)
