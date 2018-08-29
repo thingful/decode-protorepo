@@ -25,13 +25,6 @@ service Datastore {
   // interval. Pagination is supported to allow for large intervals to be
   // requested without having to return all the data in one hit.
   rpc ReadData (ReadRequest) returns (ReadResponse);
-
-  // DeleteData allows a client to delete data from a bucket for an individual
-  // user. The incoming delete request uses both the public key which identifies
-  // the bucket, but also requires a user uid. The result of this call is that
-  // all data for this user will have been removed from the datastore, but other
-  // data will be unaffected.
-  rpc DeleteData (DeleteRequest) returns (DeleteResponse);
 }
 
 // WriteRequest is the message that is sent to the store in order to write
@@ -146,24 +139,4 @@ message ReadResponse {
   // Supplied to make it easy for the client to construct a new request for the
   // next page.
   uint32 page_size = 4;
-}
-
-// DeleteRequest is a message that is sent to the server in order to delete
-// entries stored for a particular user. It may be in the future we extend this
-// to allow data for a specific entitlement policy to be deleted but for now the
-// only use case we know we have to support is being able to delete an
-// individual user's data.
-message DeleteRequest {
-  // The public key is the key identifying the policy for which data has been
-  // encrypted. This field is required.
-  string public_key = 1;
-
-  // The id of the user who wishes to have their data removed from the
-  // datastore.
-  string user_uid = 2;
-}
-
-// DeleteResponse is a placeholder message we return from the delete call.
-// Future implementations may add fields to this type.
-message DeleteResponse {
 }
