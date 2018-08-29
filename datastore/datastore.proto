@@ -6,16 +6,15 @@ option go_package = "datastore";
 import "google/protobuf/timestamp.proto";
 
 // Datastore is the interface we propose exposing to implement an encrypted
-// datastore for the IOT scale model and pilot for DECODE. We expose three
-// methods, to write and read data, as well as a method to delete data for a
-// user.
+// datastore for the IOT scale model and pilot for DECODE. We expose two API
+// methods, one to write and one to read data.
 service Datastore {
   // WriteData is our function call that writes a single encrypted data event to
   // the underlying storage substrate. It takes a WriteRequest containing the
   // actual data to be stored along with public key of the bucket for which data
   // should be persisted and the submitting user's DECODE user id. THese
   // additional attributes allow us to request the data from the bucket by
-  // public key, and delete the data by user uid.
+  // public key.
   rpc WriteData (WriteRequest) returns (WriteResponse);
 
   // ReadData is used to request data from the data store. Data is requested
@@ -36,15 +35,12 @@ message WriteRequest {
   // encrypted.
   string public_key = 1; // required
 
-  // The user uid is a unique identifier for the user submitting the data. We
-  // persist this in order to allow the user to delete stored data.
-  string user_uid = 2; // required
-
   // The data field here is the encrypted data to be stored for the specified
   // public key/entitlement policy. From the datastore's perspective this can
-  // just be a slice of bytes, however zenroom does permit this data to maintain
-  // some structure.
-  bytes data = 3; // required
+  // just be a slice of bytes, however zenroom does permit this data to
+  // maintain some structure. From the datastores perspective however it treats
+  // this data as a completely opaque bytes.
+  bytes data = 2; // required
 }
 
 // WriteResponse is a placeholder message returned from the call to write data
