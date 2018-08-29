@@ -96,10 +96,6 @@ message EncryptedEvent {
 
   // The opaque chunk of bytes comprising the encoded data from the device.
   bytes data = 2;
-
-  // An identifier for an individual event. Used internally when sorting and
-  // paginating.
-  int64 event_id = 3;
 }
 
 // ReadResponse is the top level message returned by the read operations to the
