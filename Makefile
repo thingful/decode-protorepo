@@ -21,3 +21,4 @@ bootstrap: ## install everything needed to work with these
 	go get -u github.com/twitchtv/retool
 	retool add github.com/golang/protobuf/protoc-gen-go master
 	retool add github.com/twitchtv/twirp/protoc-gen-twirp master
+	retool add github.com/twitchtv/twirp/protoc-gen-twirp_python master

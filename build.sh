@@ -37,8 +37,12 @@ function buildDir {
           retool do protoc --twirp_out="$build_dir" --twirp_js_out="$build_dir" --js_out="import_style=commonjs,binary:$build_dir" ./*.proto
           ;;
 
+        python)
+          retool do protoc --proto_path=. --twirp_python_out="$build_dir" --python_out="$build_dir" ./*.proto
+          ;;
+
         *)
-          print "Unknown language - currently supported languages are: go, ruby, js"
+          print "Unknown language - currently supported languages are: go, ruby, js and python"
           exit 1
       esac
 
