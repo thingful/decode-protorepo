@@ -103,16 +103,6 @@ message CreateEntitlementPolicyRequest {
   // required, and it is required that the client supplies at least one
   // Operation.
   repeated Operation operations = 3; // required
-
-  // This attribute can be used to define whether or not the entitlement policy
-  // should attempt to obfuscate the real location of the user. This value
-  // represents a value in metres by which the location should be obfuscated,
-  // e.g. a value of 500 would mean obfuscate the precise location by 500
-  // metres. How the encoder chooses to implement obfuscation is not defined by
-  // this interface allowing different obfuscation algorithms to be
-  // implemented. If not supplied the default obfuscation is 0, i.e. don't
-  // obfuscate the location at all.
-  uint32 location_obfuscation_radius = 4;
 }
 
 // CreateEntitlementPolicyResponse is a message returned by the service after a
@@ -187,13 +177,6 @@ message ListEntitlementPoliciesResponse {
     // attribute is the label applied to the bucket within the datastore which
     // will be how data can be downloaded for the entitlement policy.
     string public_key = 4;
-
-    // This attribute describes whether or not the policy defines a rule that
-    // obfuscates the location of the user.  This is a value in metres, and if
-    // a user applies the policy their location will be obfuscated at minimum
-    // this amount. If the value is 0 then the user's location is not
-    // obfuscated at all.
-    uint32 location_obfuscation_radius = 5;
   }
 
   // This attribute contains the list of all policies currently available on
