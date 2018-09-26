@@ -126,16 +126,6 @@ message CreateStreamRequest {
   // to the data, but if this field contains any elements, the resulting stream
   // will only contain the specified sensor type.
   repeated Operation operations = 7;
-
-  // This attribute can be used to define whether or not the encoded stream
-  // should also attempt to obfuscate the real location of the user. This value
-  // represents a value in metres by which the location should be obfuscated,
-  // e.g. a value of 500 would mean obfuscate the precise location by 500
-  // metres. How the encoder chooses to implement obfuscation is not defined by
-  // this interface allowing different obfuscation algorithms to be
-  // implemented. If not supplied the default obfuscation is 0, i.e. don't
-  // obfuscate the location at all.
-  uint32 location_obfuscation_radius = 8;
 }
 
 // CreateStreamResponse is the message returned from the stream encoder after it
