@@ -11,6 +11,18 @@
     {
       "Repository": "github.com/twitchtv/twirp/protoc-gen-twirp_python",
       "Commit": "8ad347ff7c94521ec5cc9e7a6c578d335fd676a5"
+    },
+    {
+      "Repository": "github.com/thechriswalker/protoc-gen-twirp_js",
+      "Commit": "e890631841b0e255469170c88202498441a7a3bc"
+    },
+    {
+      "Repository": "github.com/horizon-games/protoc-gen-twirp_ts",
+      "Commit": "2383516b291de744cb90546ca66c7888f6ad06b5"
+    },
+    {
+      "Repository": "github.com/smulube/protoc-gen-twirp_typescript",
+      "Commit": "04ac2bd61f797014ef40cf4411857b98bf031e6f"
     }
   ],
   "RetoolVersion": "1.3.7"
