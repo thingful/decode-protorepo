@@ -65,8 +65,9 @@ message CreateStreamRequest {
   // An enumeration which allows us to express whether the device will be
   // located indoors or outdoors when deployed.
   enum Exposure {
-    INDOOR = 0;
-    OUTDOOR = 1;
+    UNKNOWN = 0;
+    INDOOR = 1;
+    OUTDOOR = 2;
   }
 
   // The specific exposure of the device, i.e. is this instance indoors or
@@ -85,9 +86,10 @@ message CreateStreamRequest {
     // implies sharing the data at full resolution. If this type is specified, it
     // is an error if either of `buckets` or `interval` is also supplied.
     enum Action {
-      SHARE = 0;
-      BIN = 1;
-      MOVING_AVG = 2;
+      UNKNOWN = 0;
+      SHARE = 1;
+      BIN = 2;
+      MOVING_AVG = 3;
     }
 
     // The specific action this entitlement defines for the sensor type. This is a

@@ -54,9 +54,10 @@ message Operation {
   // implies sharing the data at full resolution. If this type is specified, it
   // is an error if either of `buckets` or `interval` is also supplied.
   enum Action {
-    SHARE = 0;
-    BIN = 1;
-    MOVING_AVG = 2;
+    UNKNOWN = 0;
+    SHARE = 1;
+    BIN = 2;
+    MOVING_AVG = 3;
   }
 
   // The specific action this operation defines for the sensor type. This is a
