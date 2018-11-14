@@ -43,12 +43,6 @@ message CreateStreamRequest {
   // in which data should be stored. This is a required field.
   string recipient_public_key = 3;
 
-  // The identifier of the user for which the stream is being created. This is
-  // included as we also need to tell this information to the datastore so that
-  // data for this user can be deleted if they so desire.
-  // This is a required field.
-  string user_uid = 4;
-
   // A nested type capturing the location of the device expressed via decimal
   // long/lat pair.
   message Location {
