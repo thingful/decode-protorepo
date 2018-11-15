@@ -36,7 +36,11 @@ service Encoder {
 // datastore.
 message CreateStreamRequest {
   // The token that uniquely identifies the device. This is a required field.
-  string device_token = 2;
+  string device_token = 1;
+
+  // A unique identifier for the specific community represented by the policy
+  // being applied.
+  string policy_id = 2;
 
   // The public key of the recipient, again this is used in order to encrypt
   // outgoing data, as well as being used to signify to the datastore the bucket
