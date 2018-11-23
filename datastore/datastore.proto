@@ -31,9 +31,10 @@ service Datastore {
 // the user, as well as an id representing the entitlement policy. Finally the
 // encrypted data is sent as a chunk of bytes.
 message WriteRequest {
-  // The public key is the key identifying the party for which data has been
-  // encrypted.
-  string public_key = 1; // required
+  // Reserve these attributes as they have been removed from a previous version
+  // of this specification.
+  reserved 1;
+  reserved "public_key";
 
   // The data field here is the encrypted data to be stored for the specified
   // public key/entitlement policy. From the datastore's perspective this can
@@ -44,6 +45,12 @@ message WriteRequest {
 
   // A token that uniquely identifies the device. This is a required field.
   string device_token = 3;
+
+  // A string that uniquely identifies the policy for which data is being
+  // written. A recipient will not be able to decrypt the data unless they are
+  // in possession of valid credentials to decrypt this data. This is a
+  // required field.
+  string policy_id = 4;
 }
 
 // WriteResponse is a placeholder message returned from the call to write data
@@ -59,9 +66,10 @@ message WriteResponse {
 // must be after the start time; if no end time is specified then the default is
 // "now". It is an error to specify an end time without a start time.
 message ReadRequest {
-  // The public key is the key identifying the party for which data has been
-  // encrypted. This field is required.
-  string public_key = 1;
+  // Reserve these attributes as they have been removed from a previous version
+  // of this specification.
+  reserved 1;
+  reserved "public_key";
 
   // The start time represents the start of an interval for which we wish to
   // read data. It is an error for start_time to be in the future or to be
@@ -84,6 +92,11 @@ message ReadRequest {
   // default value is 500. Returns an error if the caller requests a larger
   // page size than the maximum.
   uint32 page_size = 5;
+
+  // A string that uniquely identifies the policy for which data is being
+  // requested. A recipient will not be able to decrypt the data unless they
+  // are in possession of the correct credentials. This is a required field.
+  string policy_id = 6;
 }
 
 // EncryptedEvent is a message representing a single instance of encrypted data
@@ -111,9 +124,10 @@ message EncryptedEvent {
 // if this property is the empty string, then the response is all data available
 // for the requested time period.
 message ReadResponse {
-  // The public key of the recipient for which data is being requested. This
-  // field will always have a non-empty value.
-  string public_key = 1;
+  // Reserve these attributes as they have been removed from a previous version
+  // of this specification.
+  reserved 1;
+  reserved "public_key";
 
   // The list of encrypted events containing the actual data being requested.
   // This list will be returned in ascending time order, and each element
@@ -134,4 +148,9 @@ message ReadResponse {
   // Supplied to make it easy for the client to construct a new request for the
   // next page.
   uint32 page_size = 4;
+
+  // A string that uniquely identifies the policy for which data is being
+  // sent. A recipient will not be able to decrypt the data unless they
+  // are in possession of the correct credentials.
+  string policy_id = 5;
 }
