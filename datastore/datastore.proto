@@ -33,8 +33,14 @@ service Datastore {
 message WriteRequest {
   // Reserve these attributes as they have been removed from a previous version
   // of this specification.
-  reserved 1;
-  reserved "public_key";
+  reserved 1, 4;
+  reserved "public_key", "policy_id";
+
+  // A string that uniquely identifies the community for which data is being
+  // written. A recipient will not be able to decrypt the data unless they are
+  // in possession of valid credentials to decrypt this data. This is a
+  // required field.
+  string community_id = 5;
 
   // The data field here is the encrypted data to be stored for the specified
   // public key/entitlement policy. From the datastore's perspective this can
@@ -45,12 +51,6 @@ message WriteRequest {
 
   // A token that uniquely identifies the device. This is a required field.
   string device_token = 3;
-
-  // A string that uniquely identifies the policy for which data is being
-  // written. A recipient will not be able to decrypt the data unless they are
-  // in possession of valid credentials to decrypt this data. This is a
-  // required field.
-  string policy_id = 4;
 }
 
 // WriteResponse is a placeholder message returned from the call to write data
@@ -68,8 +68,8 @@ message WriteResponse {
 message ReadRequest {
   // Reserve these attributes as they have been removed from a previous version
   // of this specification.
-  reserved 1;
-  reserved "public_key";
+  reserved 1, 6;
+  reserved "public_key", "policy_id";
 
   // The start time represents the start of an interval for which we wish to
   // read data. It is an error for start_time to be in the future or to be
@@ -93,10 +93,10 @@ message ReadRequest {
   // page size than the maximum.
   uint32 page_size = 5;
 
-  // A string that uniquely identifies the policy for which data is being
+  // A string that uniquely identifies the community for which data is being
   // requested. A recipient will not be able to decrypt the data unless they
   // are in possession of the correct credentials. This is a required field.
-  string policy_id = 6;
+  string community_id = 7;
 }
 
 // EncryptedEvent is a message representing a single instance of encrypted data
@@ -126,8 +126,8 @@ message EncryptedEvent {
 message ReadResponse {
   // Reserve these attributes as they have been removed from a previous version
   // of this specification.
-  reserved 1;
-  reserved "public_key";
+  reserved 1, 5;
+  reserved "public_key", "policy_id";
 
   // The list of encrypted events containing the actual data being requested.
   // This list will be returned in ascending time order, and each element
@@ -149,8 +149,8 @@ message ReadResponse {
   // next page.
   uint32 page_size = 4;
 
-  // A string that uniquely identifies the policy for which data is being
+  // A string that uniquely identifies the community for which data is being
   // sent. A recipient will not be able to decrypt the data unless they
   // are in possession of the correct credentials.
-  string policy_id = 5;
+  string community_id = 6;
 }
