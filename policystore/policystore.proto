@@ -112,6 +112,11 @@ message CreateEntitlementPolicyRequest {
   // end user must interact with in order to obtain blind credentials when
   // taking part in the Coconut protocol.
   string credential_issuer_endpoint_url = 5; // required
+
+  // Multi language description of the community for which this policy applies
+  // consisting of a map where the map keys are a standard language code, and
+  // the value is the description in that language.
+  map<string, string> descriptions = 6;
 }
 
 // CreateEntitlementPolicyResponse is a message returned by the service after a
@@ -207,6 +212,11 @@ message ListEntitlementPoliciesResponse {
     // end user must interact with in order to obtain blind credentials when
     // taking part in the Coconut protocol.
     string credential_issuer_endpoint_url = 6; // required
+
+    // Multi language description of the community for which this policy applies
+    // consisting of a map where the map keys are a standard language code, and
+    // the value is the description in that language.
+    map<string, string> descriptions = 7;
   }
 
   // This attribute contains the list of all policies currently available on
