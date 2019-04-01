@@ -216,7 +216,7 @@ message ListEntitlementPoliciesResponse {
     // Multi language description of the community for which this policy applies
     // consisting of a map where the map keys are a standard language code, and
     // the value is the description in that language.
-    map<string, string> descriptions = 7;
+    map<string, string> descriptions = 8;
   }
 
   // This attribute contains the list of all policies currently available on
