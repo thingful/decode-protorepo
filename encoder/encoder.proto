@@ -21,12 +21,12 @@ service Encoder {
   // listening for events. On receiving incoming messages via the MQTT broker,
   // we encrypt the contents using Zenroom and then write the encrypted data to
   // the configured datastore.
-  rpc CreateStream (CreateStreamRequest) returns (CreateStreamResponse);
+  rpc CreateStream(CreateStreamRequest) returns (CreateStreamResponse);
 
   // DeleteStream is called to remove the configuration for an encoded data
   // stream. This means deleting the MQTT subscription and removing all saved
   // credentials.
-  rpc DeleteStream (DeleteStreamRequest) returns (DeleteStreamResponse);
+  rpc DeleteStream(DeleteStreamRequest) returns (DeleteStreamResponse);
 }
 
 // CreateStreamRequest is the message sent in order to create a new encoded
@@ -40,6 +40,9 @@ message CreateStreamRequest {
 
   // The token that uniquely identifies the device. This is a required field.
   string device_token = 1;
+
+  // A name chosen by the user that they have assigned to their device
+  string device_label = 9;
 
   // A unique identifier for the specific community represented by the policy
   // being applied.
@@ -84,8 +87,8 @@ message CreateStreamRequest {
 
     // An enumeration which allows us to specify what type of sharing is to be
     // defined for the specified sensor type. The default value is `SHARE` which
-    // implies sharing the data at full resolution. If this type is specified, it
-    // is an error if either of `buckets` or `interval` is also supplied.
+    // implies sharing the data at full resolution. If this type is specified,
+    // it is an error if either of `buckets` or `interval` is also supplied.
     enum Action {
       UNKNOWN = 0;
       SHARE = 1;
@@ -93,35 +96,36 @@ message CreateStreamRequest {
       MOVING_AVG = 3;
     }
 
-    // The specific action this entitlement defines for the sensor type. This is a
-    // required field.
+    // The specific action this entitlement defines for the sensor type. This is
+    // a required field.
     Action action = 2;
 
     // The bins attribute is used to specify the the bins into which incoming
     // values should be classified. Each element in the list is the upper
     // inclusive bound of a bin. The values submitted must be sorted in strictly
-    // increasing order. There is no need to add a highest bin with +Inf bound, it
-    // will be added implicitly. This field is optional unless an Action of `BIN`
-    // has been requested, in which case it is required. It is an error to send
-    // values for this attribute unless the value of Action is `BIN`.
+    // increasing order. There is no need to add a highest bin with +Inf bound,
+    // it will be added implicitly. This field is optional unless an Action of
+    // `BIN` has been requested, in which case it is required. It is an error to
+    // send values for this attribute unless the value of Action is `BIN`.
     repeated double bins = 3;
 
-    // This attribute is used to control the entitlement in the case for which we
-    // have specified an action type representing a moving average. It represents
-    // the interval in seconds over which the moving average should be calculated,
-    // e.g. for a 15 minute moving average the value supplied here would be 900.
-    // This field is optional unless an Action of `MOVING_AVG` has been specified,
-    // in which case it is required. It is an error to send a value for this
-    // attribute unless the value of Action is `MOVING_AVG`.
+    // This attribute is used to control the entitlement in the case for which
+    // we have specified an action type representing a moving average. It
+    // represents the interval in seconds over which the moving average should
+    // be calculated, e.g. for a 15 minute moving average the value supplied
+    // here would be 900. This field is optional unless an Action of
+    // `MOVING_AVG` has been specified, in which case it is required. It is an
+    // error to send a value for this attribute unless the value of Action is
+    // `MOVING_AVG`.
     uint32 interval = 4;
   }
 
   // The entitlements field holds a repeated list of Operations which each
   // define a transformational function for a specific sensor id. If no
   // operations are submitted, we currently create a stream that writes
-  // through all received channels without applying any processing transformations
-  // to the data, but if this field contains any elements, the resulting stream
-  // will only contain the specified sensor type.
+  // through all received channels without applying any processing
+  // transformations to the data, but if this field contains any elements, the
+  // resulting stream will only contain the specified sensor type.
   repeated Operation operations = 7;
 }
 
@@ -153,5 +157,4 @@ message DeleteStreamRequest {
 
 // DeleteStreamResponse is a placeholder response message on a successful
 // deletion of stream on the encoder.
-message DeleteStreamResponse {
-}
+message DeleteStreamResponse {}
